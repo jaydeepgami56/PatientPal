@@ -1,0 +1,20 @@
+# FastAPI Backend Requirements
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+pydantic-settings==2.1.0
+python-dotenv==1.0.0
+python-multipart==0.0.6
+
+# Existing dependencies from Streamlit app
+langchain>=0.0.300
+langchain-openai>=0.0.2
+openai>=0.27.8
+tiktoken>=0.4.0
+transformers>=4.36.2
+huggingface-hub>=0.16.4
+langchain-huggingface
+torch>=2.0.0
+accelerate>=0.20.0
+Pillow>=10.0.0
+pandas

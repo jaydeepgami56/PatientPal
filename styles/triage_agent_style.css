@@ -1,0 +1,86 @@
+/*
+Medical Triage Agent - Custom Styles
+=====================================
+Custom CSS styling for the Pre-Visit AI Agent interface
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+
+* {
+    font-family: 'Inter', sans-serif;
+}
+
+#MainMenu {
+    visibility: hidden;
+}
+
+footer {
+    visibility: hidden;
+}
+
+.stApp {
+    background: linear-gradient(180deg, #0a0a1f 0%, #1a1a3f 100%);
+}
+
+.section-header {
+    font-size: 28px;
+    font-weight: 700;
+    color: #8b5cf6;
+    margin: 30px 0 20px 0;
+    padding-bottom: 10px;
+    border-bottom: 2px solid rgba(139, 92, 246, 0.3);
+}
+
+.info-card {
+    background: rgba(139, 92, 246, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    border-radius: 15px;
+    padding: 25px;
+    margin: 15px 0;
+}
+
+.report-section {
+    background: rgba(236, 72, 153, 0.05);
+    border-left: 4px solid #ec4899;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 15px 0;
+}
+
+.triage-level-1 {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.2));
+    border: 2px solid #ef4444;
+    padding: 20px;
+    border-radius: 15px;
+    color: #fecaca;
+}
+
+.triage-level-2 {
+    background: linear-gradient(135deg, rgba(251, 146, 60, 0.2), rgba(249, 115, 22, 0.2));
+    border: 2px solid #f97316;
+    padding: 20px;
+    border-radius: 15px;
+    color: #fed7aa;
+}
+
+.triage-level-3 {
+    background: linear-gradient(135deg, rgba(234, 179, 8, 0.2), rgba(202, 138, 4, 0.2));
+    border: 2px solid #eab308;
+    padding: 20px;
+    border-radius: 15px;
+    color: #fef08a;
+}
+
+.progress-step {
+    background: rgba(139, 92, 246, 0.1);
+    padding: 15px;
+    border-radius: 10px;
+    margin: 10px 0;
+    border-left: 4px solid #8b5cf6;
+}
+
+.completed-step {
+    background: rgba(34, 197, 94, 0.1);
+    border-left: 4px solid #22c55e;
+}
