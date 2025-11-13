@@ -8,8 +8,7 @@ Handles general medical questions, symptom analysis, and preliminary diagnostics
 import os
 from datetime import datetime
 from typing import Optional, Dict, Any
-from langchain_huggingface import HuggingFacePipeline
-from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
+from langchain_huggingface import HuggingFaceEndpoint
 
 from utils.agent_base import BaseHealthcareAgent, AgentConfig, AgentResponse
 from utils.prompts import MEDGEMMA_PROMPT
@@ -18,11 +17,11 @@ from utils.prompts import MEDGEMMA_PROMPT
 class MedGemmaAgent(BaseHealthcareAgent):
     """
     MedGemma specialist agent for general medical queries.
-    Inherits from BaseHealthcareAgent with Pydantic validation.
+    Uses Hugging Face Inference API for fast remote execution.
     """
 
     def initialize(self) -> bool:
-        """Initialize MedGemma model from Hugging Face"""
+        """Initialize MedGemma model via Hugging Face Inference API"""
         try:
             if self._is_initialized:
                 return True
@@ -32,33 +31,20 @@ class MedGemmaAgent(BaseHealthcareAgent):
             # Check for HuggingFace token
             hf_token = os.getenv("HUGGINGFACE_API_KEY")
             if not hf_token:
-                self.logger.warning("No HUGGINGFACE_API_KEY found. Some models may not be accessible.")
+                self.logger.error("No HUGGINGFACE_API_KEY found")
+                return False
 
-            # Load model and tokenizer
-            tokenizer = AutoTokenizer.from_pretrained(
-                self.model_id,
-                token=hf_token,
-                trust_remote_code=True
-            )
-            model = AutoModelForCausalLM.from_pretrained(
-                self.model_id,
-                token=hf_token,
-                trust_remote_code=True,
-                device_map="auto"
-            )
-
-            # Create pipeline
-            pipe = pipeline(
-                "text-generation",
-                model=model,
-                tokenizer=tokenizer,
+            # Use Hugging Face Inference API (fast, no local download)
+            self._llm = HuggingFaceEndpoint(
+                repo_id=self.model_id,
+                huggingfacehub_api_token=hf_token,
                 max_new_tokens=self.config.max_tokens,
-                temperature=self.config.temperature
+                temperature=self.config.temperature,
+                timeout=60
             )
 
-            self._llm = HuggingFacePipeline(pipeline=pipe)
             self._is_initialized = True
-            self.logger.info("MedGemma initialized successfully")
+            self.logger.info("MedGemma initialized successfully via Inference API")
             return True
 
         except Exception as e:
@@ -151,7 +137,7 @@ def create_medgemma_agent(config: Optional[AgentConfig] = None) -> MedGemmaAgent
     if config is None:
         config = AgentConfig(
             name="MedGemma",
-            model_id="google/medgemma-7b",
+            model_id="google/medgemma-4b-it",
             model_type="huggingface",
             description="General medical query processing and diagnostic support",
             capabilities=[

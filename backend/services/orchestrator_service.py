@@ -43,14 +43,33 @@ class OrchestratorService:
                 openai_api_key=settings.openai_api_key or os.getenv("OPENAI_API_KEY")
             )
 
-            # Create all specialist agents
-            agents = {
-                "MedGemma": create_medgemma_agent(),
-                "TxGemma": create_txgemma_agent(),
-                "Derm Foundation": create_derm_agent(),
-                "CXR Foundation": create_cxr_agent(),
-                "Pathology": create_pathology_agent()
+            # Create all specialist agents (gracefully skip failures)
+            agents = {}
+            agent_factories = {
+                "MedGemma": create_medgemma_agent,
+                "TxGemma": create_txgemma_agent,
+                "Derm Foundation": create_derm_agent,
+                "CXR Foundation": create_cxr_agent,
+                "Pathology": create_pathology_agent
             }
+
+            for name, factory in agent_factories.items():
+                try:
+                    agent = factory()
+                    # Try to initialize immediately to catch failures early
+                    if agent.initialize():
+                        agents[name] = agent
+                        print(f"[OK] Successfully initialized {name}")
+                    else:
+                        print(f"[SKIP] {name} - initialization failed")
+                except Exception as e:
+                    print(f"[SKIP] {name} - {str(e)}")
+
+            # Ensure we have at least one agent
+            if not agents:
+                raise Exception("No agents could be initialized")
+
+            print(f"[OK] Orchestrator initialized with {len(agents)} agents: {', '.join(agents.keys())}")
 
             # Create orchestrator
             self._orchestrator = LeadAgentOrchestrator(
@@ -82,7 +101,7 @@ class OrchestratorService:
                 full_context["image_data"] = image_data
 
             # Process through orchestrator
-            result = self._orchestrator.process_query(query, full_context)
+            result = self._orchestrator.orchestrate(query, full_context)
 
             processing_time = time.time() - start_time
 
